@@ -22,8 +22,8 @@ class Sampler(IntervalTimer):
     def __init__(self,interval):
         super(Sampler, self).__init__(interval)
         self.knocker = Knocker(HEARTBEAT_GPIO)
-        self.recorder = Recorder(UPLOAD_URL, BASICAUTH_ID, BASICAUTH_PASS, \
-            MINIMUM_UPLOAD_QUEUE_LENGTH)
+        # self.recorder = Recorder(UPLOAD_URL, BASICAUTH_ID, BASICAUTH_PASS, \
+        #     MINIMUM_UPLOAD_QUEUE_LENGTH)
         self.adc = Adafruit_ADS1x15.ADS1015(\
             address=ADS1015_I2C_BASE_ADDRESS,busnum=I2C_BUSNUM)
         self.reset_valiables()
