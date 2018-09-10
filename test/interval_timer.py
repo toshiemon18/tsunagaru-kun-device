@@ -14,7 +14,7 @@ class IntervalTimer(object):
         pass
 
     def longloop(self):
-        print time.time()-self.start
+        print(time.time()-self.start)
 
     def loop(self):
         self.start=int(time.time())
