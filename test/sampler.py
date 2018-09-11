@@ -40,8 +40,7 @@ class Sampler(IntervalTimer):
     def busyloop(self):
         if self.samples%CHANNEL_CHANGE_INTERVAL == 0 :
             self.sensor=(self.samples/CHANNEL_CHANGE_INTERVAL)%SENSORS
-            self.adc.start_adc(self.sensor, gain=PGA_GAIN, \
-                data_rate=SAMPLING_RATE)
+            self.adc.start_adc(self.sensor, gain=PGA_GAIN, data_rate=SAMPLING_RATE)
             time.sleep(2.0/SAMPLING_RATE)
 
         current=self.adc.get_last_result()*CONVERSION_CONSTANT
