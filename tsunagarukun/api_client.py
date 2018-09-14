@@ -30,6 +30,7 @@ class APIClient:
         """
         センサーで計測した情報をつながるくんサーバーに送信する
         Args
+            - params: 送信するメトリクスのdict
         Returns
             - status:  HTTP Status
             - body:    ボディ
@@ -51,8 +52,9 @@ class APIClient:
             - body:    HTTPレスポンスのボディ
             - headers: HTTPレスポンスのヘッダー
         """
-        request = Request("{}{}".format(self.url, endpoint))
+        request = Request("{}{}".format(self.url, endpoint), headers=headers)
         with urlopen(request) as response:
+            status = response.status
             body = json.load(response)
             headers = dict(response.headers)
             return body, headers
@@ -73,6 +75,7 @@ class APIClient:
         request = Request("{}{}".format(self.url, endpoint),
                                          json(data).encode(), header)
         with urlopen(request) as response:
+            status = response.status
             body = json.load(response)
             headers = dict(response.headers)
             return body, headers
