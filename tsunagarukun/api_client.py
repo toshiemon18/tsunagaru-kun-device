@@ -5,8 +5,14 @@ from urllib.request import Request, urlopen
 import json
 
 class APIClient:
-    def __init__(self, url="http://localhost", port="3000"):
-        self.url = self.build_baseurl(url, port)
+    def __init__(self, email, password):
+        self.url = self._build_baseurl()
+        status, _, headers = self.login(email, password)
+        if status == 200:
+            self.authenticate_data = {"access-token": headers["access-token"],
+                                      "uid": headers["uid"],
+                                      "client": headers["client"]}
+
 
     def login(self, email, password):
         """
@@ -21,12 +27,12 @@ class APIClient:
         """
         params = {"email": email,
                   "password": password}
-        headers = {"Content-Type": "application/json"}
+        headers = self._build_headers()
         s, b, h = self._post_request("/v1/auth/sign_in", params, headers)
         return s, b, h
 
 
-    def post_metrics(self, params, headers):
+    def post_metrics(self, params):
         """
         センサーで計測した情報をつながるくんサーバーに送信する
         Args
@@ -36,7 +42,8 @@ class APIClient:
             - body:    ボディ
             - headers: ヘッダー
         """
-        pass
+        headers = self._build_headers(**self.authenticate_data)
+        s, b, h = self._post_request("/v1/metric")
 
 
     # ===== Private functions
@@ -53,11 +60,20 @@ class APIClient:
             - headers: HTTPレスポンスのヘッダー
         """
         request = Request("{}{}".format(self.url, endpoint), headers=headers)
-        with urlopen(request) as response:
-            status = response.status
-            body = json.load(response)
-            headers = dict(response.headers)
-            return body, headers
+        try:
+            with urlopen(request) as response:
+                status = response.status
+                body = json.load(response)
+                headers = dict(response.headers)
+                return status, body, headers
+        except urllib.error.HTTPError as err:
+            print("Detected 4xx or 5xx HTTP Status.")
+            print(err.code())
+            print(err.msg)
+        except urllib.error.URLError as err:
+            print("Failed HTTP communication.")
+            print(err.code())
+            print(err.msg)
 
 
     def _post_request(self, endpoint, data, header):
@@ -73,17 +89,45 @@ class APIClient:
             - headers: HTTPレスポンスのヘッダー
         """
         request = Request("{}{}".format(self.url, endpoint),
-                                         json(data).encode(), header)
-        with urlopen(request) as response:
-            status = response.status
-            body = json.load(response)
-            headers = dict(response.headers)
-            return body, headers
+                                         json.dumps(data).encode(), header)
+        try:
+            with urlopen(request) as response:
+                status = response.status
+                body = json.load(response)
+                headers = dict(response.headers)
+                return status, body, headers
+        except urllib.error.HTTPError as err:
+            print("Detected 4xx or 5xx HTTP Status.")
+            print(err.code())
+            print(err.msg)
+        except urllib.error.URLError as err:
+            print("Failed HTTP communication.")
+            print(err.code())
+            print(err.msg)
 
 
-    def _build_baseurl(self, url, port):
+    def _build_baseurl(self):
         """
         APIのベースURLを構築する
         """
-        url = "{}:{}".format(url, port)
-        return url
+        import platform
+        url_format = "http://{}:3000"
+        if platform.system() == "Darwin":
+            return url_format.format("localhost")
+        else:
+            return url_format.format("corazonMacBook-Pro.local")
+
+
+    def _build_headers(self, **kargs):
+        """
+        HTTPヘッダー情報を構築する
+        Args
+            - **kargs: キーワード引数. よしなに投げろ
+        Returns
+            - headers: HTTPヘッダー情報をdictで返す
+        """
+        headers = {"Content-Type": "application/json"}
+        if len(kargs) != 0:
+            for key, val in kargs.items():
+                headers[str(key)] = val
+        return headers
