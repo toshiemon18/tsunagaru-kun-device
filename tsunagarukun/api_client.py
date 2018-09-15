@@ -7,11 +7,13 @@ import json
 class APIClient:
     def __init__(self, email, password):
         self.url = self._build_baseurl()
-        status, _, headers = self.login(email, password)
-        if status == 200:
-            self.authenticate_data = {"access-token": headers["access-token"],
-                                      "uid": headers["uid"],
-                                      "client": headers["client"]}
+        while True:
+            status, _, headers = self.login(email, password)
+            if status == 200:
+                self.authenticate_data = {"access-token": headers["access-token"],
+                                          "uid": headers["uid"],
+                                          "client": headers["client"]}
+                break
 
 
     def login(self, email, password):
@@ -43,7 +45,8 @@ class APIClient:
             - headers: ヘッダー
         """
         headers = self._build_headers(**self.authenticate_data)
-        s, b, h = self._post_request("/v1/metric")
+        s, b, h = self._post_request("/v1/metrics", params, headers)
+        return s, b, h
 
 
     # ===== Private functions
@@ -100,15 +103,21 @@ class APIClient:
             print("Detected 4xx or 5xx HTTP Status.")
             print(err.code())
             print(err.msg)
+            return err.code, None, None
         except urllib.error.URLError as err:
             print("Failed HTTP communication.")
             print(err.code())
             print(err.msg)
+            return None, None, None
 
 
     def _build_baseurl(self):
         """
         APIのベースURLを構築する
+        Returns
+            プラットフォームに依存して変化
+            - Darwin(macOS): http://localhost:3000
+            - Others: http://corazonMacBook-Pro.local
         """
         import platform
         url_format = "http://{}:3000"
