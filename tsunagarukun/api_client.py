@@ -38,6 +38,10 @@ class APIClient:
     def post_device(self, name, category, image=""):
         """
         自身をつながるくんサーバーに登録する
+        API Parameters
+            - name: デバイス名
+            - category: 接続する機器のカテゴリ
+            - iamge: サムネイル (Not implement)
         Args
             - name: デバイス名. ex) 1F洗濯機
             - category: 接続する機器のカテゴリ
@@ -55,11 +59,15 @@ class APIClient:
         return s, b, h
 
 
-    def post_metrics(self, params):
+    def post_metrics(self, electric_current, watt, device_id):
         """
         センサーで計測した情報をつながるくんサーバーに送信する
+        API Parameters
+            - electric_current: 電流値
+            - watt: 電力
+            - device_id: 本デバイスのID
         Args
-            - params: 送信するメトリクスのdict
+            - params: 送信するメトリクス(上記API Parameters)のdict
         Returns
             - status:  HTTP Status
             - body:    ボディ
