@@ -10,7 +10,8 @@ class APIClient:
         while True:
             status, _, headers = self.login(email, password)
             if status == 200:
-                self.authenticate_data = {"access-token": headers["access-token"],
+                self.authenticate_data = {"token-type": headers["token-type"],
+                                          "access-token": headers["access-token"],
                                           "uid": headers["uid"],
                                           "client": headers["client"]}
                 break
