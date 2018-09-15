@@ -34,6 +34,26 @@ class APIClient:
         return s, b, h
 
 
+    def post_device(self, name, category, image=""):
+        """
+        自身をつながるくんサーバーに登録する
+        Args
+            - name: デバイス名. ex) 1F洗濯機
+            - category: 接続する機器のカテゴリ
+            - image: デバイスのサムネイル (Not implement)
+        Returns
+            - status: HTTP Status
+            - body:   レスポンスbody
+            - headers: レスポンスheader
+        """
+        headers = self._build_headers(**self.authenticate_data)
+        params = {"name": name,
+                  "category": category,
+                  "image": image}
+        s, b, h = self._post_request("/v1/devices", params, headers)
+        return s, b, h
+
+
     def post_metrics(self, params):
         """
         センサーで計測した情報をつながるくんサーバーに送信する
