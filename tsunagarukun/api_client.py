@@ -132,12 +132,9 @@ class APIClient:
             print("Detected 4xx or 5xx HTTP Status.")
             print(err.code())
             print(err.msg)
-            return err.code, None, None
         except urllib.error.URLError as err:
             print("Failed HTTP communication.")
-            print(err.code())
             print(err.msg)
-            return None, None, None
 
 
     def _build_baseurl(self, env):
