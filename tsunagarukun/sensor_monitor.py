@@ -70,7 +70,7 @@ class SensorMonitor(BaseMonitor):
         if self.sampling_times == 0:
             self.watt_rms = 0
         else:
-            self.watt_rms = math.sqrt(self.sample / self.sampling_times * VOLTAGE*TO_KILOWATT)
+            self.watt_rms = math.sqrt(self.sample / self.sampling_times * VOLTAGE)
             self.current_rms = math.sqrt(self.sample / self.sampling_times)
 
 
