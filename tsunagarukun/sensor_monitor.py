@@ -10,7 +10,7 @@ from tsunagarukun.constants import *
 
 
 class Flipper:
-    def __init__(self, interval):
+    def __init__(self, port):
         self.port = port
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
