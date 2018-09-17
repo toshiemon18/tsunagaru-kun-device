@@ -5,8 +5,8 @@ from urllib.request import Request, urlopen
 import json
 
 class APIClient:
-    def __init__(self, email, password):
-        self.url = self._build_baseurl()
+    def __init__(self, email, password, env="development"):
+        self.url = self._build_baseurl(env)
         while True:
             status, _, headers = self.login(email, password)
             if status == 200:
@@ -140,20 +140,27 @@ class APIClient:
             return None, None, None
 
 
-    def _build_baseurl(self):
+    def _build_baseurl(self, env):
         """
         APIのベースURLを構築する
+        Args
+            - env: 環境 (development, production)
         Returns
             プラットフォームに依存して変化
             - Darwin(macOS): http://localhost:3000
-            - Others: http://corazonMacBook-Pro.local
+            - Others:
+                - development: http://st-pro.local
+                - production:  http://corazonMacBook-Pro.local
         """
         import platform
         url_format = "http://{}:3000"
         if platform.system() == "Darwin":
             return url_format.format("localhost")
         else:
-            return url_format.format("corazonMacBook-Pro.local")
+            if env == "development":
+                return url_format.format("st-pro.local")
+            elif env == "production":
+                return url_format.format("corazonMacBook-Pro.local")
 
 
     def _build_headers(self, **kargs):
