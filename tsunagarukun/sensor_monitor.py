@@ -33,16 +33,6 @@ class BaseMonitor(object):
         print(time.time() - self.start)
 
 
-    def main_loop(self):
-        self.start = int(time.time())
-        prev = self.start
-        while True:
-            while time.time() - prev < self.interval:
-                self.busy_loop()
-            prev = int(time.time())
-            self.internal_loop
-
-
 class SensorMonitor(BaseMonitor):
     def __init__(self, interval):
         super().__init__(interval)
@@ -55,8 +45,9 @@ class SensorMonitor(BaseMonitor):
         self.sensor = 0
         self.samples = 0
         self.sample = 0
-        self.sample_times = 0
-        self.watt = 0
+        self.sampling_times = 0
+        self.watt_rms = 0
+        self.current_rms = 0
 
 
     def busy_loop(self):
@@ -69,14 +60,26 @@ class SensorMonitor(BaseMonitor):
         current = self.adc.get_last_result() * CONVERSION_CONSTANT
 
         self.sample += current ** 2
-        self.sample_times += 1
+        self.sampling_times += 1
         if self.samples % FLIP_INTERVAL == 0:
             self.flipper.flip()
         self.samples += 1
 
 
     def internal_loop(self):
-        if self.sample_times == 0:
-            self.watt = 0
+        if self.sampling_times == 0:
+            self.watt_rms = 0
         else:
-            self.watt = math.sqrt(self.sample / self.sample_times * VOLTAGE*TO_KILOWATT)
+            self.watt_rms = math.sqrt(self.sample / self.sampling_times * VOLTAGE*TO_KILOWATT)
+            self.current_rms = math.sqrt(self.sample / self.sampling_times)
+
+
+    def main_loop(self):
+        self.start = int(time.time())
+        prev = self.start
+        while True:
+            while time.time() - prev < self.interval:
+                self.busy_loop()
+            prev = int(time.time())
+            self.internal_loop
+            yield {"current": self.current_rms, "watt": self.watt_rms}
