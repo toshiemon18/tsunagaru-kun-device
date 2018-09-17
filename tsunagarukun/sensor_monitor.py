@@ -60,7 +60,7 @@ class SensorMonitor(BaseMonitor):
 
 
     def busy_loop(self):
-        if self.sampels % CHANNEL_CHANGE_INTERVAL == 0:
+        if self.samples % CHANNEL_CHANGE_INTERVAL == 0:
             self.adc.start_adc(self.sensor,
                                gain=PGA_GAIN,
                                data_rate=SAMPLING_RATE)
