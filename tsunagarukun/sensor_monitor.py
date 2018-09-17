@@ -48,7 +48,7 @@ class SensorMonitor(BaseMonitor):
         super().__init__(interval)
         self.flipper = Flipper(HEARTBEAT_GPIO)
         self.adc = ADS1015(address=ADS1015_I2C_BASE_ADDRESS, busnum=I2C_BUSNUM)
-        selft.reset_vars()
+        self.reset_vars()
 
 
     def reset_vars(self):
