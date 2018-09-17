@@ -82,4 +82,4 @@ class SensorMonitor(BaseMonitor):
                 self.busy_loop()
             prev = int(time.time())
             self.internal_loop
-            yield {"current": self.current_rms, "watt": self.watt_rms}
+            yield {"electric_current": self.current_rms, "watt": self.watt_rms}
