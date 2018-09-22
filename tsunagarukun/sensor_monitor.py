@@ -57,7 +57,7 @@ class SensorMonitor(BaseMonitor):
                                data_rate=SAMPLING_RATE)
             time.sleep(2.0/SAMPLING_RATE)
 
-        current = self.adc.get_last_result() * CONVERSION_CONSTANT
+        current = self.adc.read_adc(0, gain=PGA_GAIN) * CONVERSION_CONSTANT
 
         self.sample += current ** 2
         self.sampling_times += 1
