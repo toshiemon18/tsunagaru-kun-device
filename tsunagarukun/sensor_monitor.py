@@ -38,7 +38,7 @@ class SensorMonitor(BaseMonitor):
 
 
     def busy_loop(self):
-        current = self.convert_adcval_to_current(adc.read_adc(0, gain=PGA_GAIN))
+        current = self.convert_adcval_to_current(self.adc.read_adc(0, gain=PGA_GAIN))
 
         self.sample += current ** 2
         self.sampling_times += 1
