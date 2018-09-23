@@ -26,7 +26,10 @@ setup(name='tsunagaru-kun-device',
       url='https://github.com/toshiemon18',
       download_url='https://github.com/toshiemon18/tsunagaru-kun-device',
       license='MIT',
-      install_requires=['adafruit-ads1x15'],
+      install_requires=[
+          'adafruit-ads1x15',
+          'numpy'
+      ],
       classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Intended Audience :: Developers',
