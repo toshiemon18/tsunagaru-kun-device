@@ -49,8 +49,6 @@ class SensorMonitor(BaseMonitor):
         else:
             self.current_rms = self.rms(self.sample_list)
             self.watt_rms = self.current_rms * VOLTAGE
-            print("[internal_loop] current : {}".format(self.current_rms))
-            print("[internal_loop]    watt : {}".format(self.watt_rms))
 
 
     def main_loop(self):
