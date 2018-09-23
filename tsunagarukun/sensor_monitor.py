@@ -49,7 +49,7 @@ class SensorMonitor(BaseMonitor):
 
     def internal_loop(self):
         if self.sampling_times == 0:
-            self.watt_rms = 0
+            self.reset_vars()
         else:
             self.watt_rms = math.sqrt(self.sample / float(self.sampling_times)) * VOLTAGE
             self.current_rms = math.sqrt(self.sample / float(self.sampling_times))
