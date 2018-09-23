@@ -61,7 +61,7 @@ class SensorMonitor(BaseMonitor):
                 if len(self.sample_list) <= SAMPLE_TIMES:
                     self.busy_loop()
             prev = int(time.time())
-            self.internal_loop
+            self.internal_loop()
             yield {"electric_current": self.current_rms, "watt": self.watt_rms}
 
 
