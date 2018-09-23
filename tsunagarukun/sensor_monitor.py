@@ -5,6 +5,7 @@ import math
 import sys
 from Adafruit_ADS1x15 import ADS1015
 import RPi.GPIO as GPIO
+import numpy as np
 
 from tsunagarukun.constants import *
 
@@ -30,8 +31,7 @@ class SensorMonitor(BaseMonitor):
 
     def reset_vars(self):
         self.sensor = 0
-        self.samples = 0
-        self.sample = 0
+        self.sample_list = []
         self.sampling_times = 0
         self.watt_rms = 0
         self.current_rms = 0
@@ -39,20 +39,18 @@ class SensorMonitor(BaseMonitor):
 
     def busy_loop(self):
         current = self.convert_adcval_to_current(self.adc.read_adc(0, gain=PGA_GAIN))
-
-        self.sample += current ** 2
+        self.sample_list.append(current)
         self.sampling_times += 1
-        if self.samples % FLIP_INTERVAL == 0:
-            self.flipper.flip()
-        self.samples += 1
 
 
     def internal_loop(self):
         if self.sampling_times == 0:
             self.reset_vars()
         else:
-            self.watt_rms = math.sqrt(self.sample / float(self.sampling_times)) * VOLTAGE
-            self.current_rms = math.sqrt(self.sample / float(self.sampling_times))
+            self.current_rms = self.rms(self.sample_list)
+            self.watt_rms = self.current_rms * VOLTAGE
+            # self.watt_rms = math.sqrt(self.sample / float(self.sampling_times)) * VOLTAGE
+            # self.current_rms = math.sqrt(self.sample / float(self.sampling_times))
 
 
     def main_loop(self):
@@ -60,7 +58,8 @@ class SensorMonitor(BaseMonitor):
         prev = self.start
         while True:
             while time.time() - prev < self.interval:
-                self.busy_loop()
+                if len(self.sample_list) <= SAMPLE_TIMES:
+                    self.busy_loop()
             prev = int(time.time())
             self.internal_loop
             yield {"electric_current": self.current_rms, "watt": self.watt_rms}
@@ -69,4 +68,9 @@ class SensorMonitor(BaseMonitor):
     def convert_adcval_to_current(self, adcval):
         Vmax = 2.048   # 測定可能な最大電圧 (ADS1015のGain2を選択)
         ValMax = 2048  # 引数の最大値
-        return (adcval / ValMax * Vmax) / CONVERSION_CONSTANT
+        return ((adcval / ValMax) * Vmax) / CONVERSION_CONSTANT
+
+    def rms(self, num_list):
+        powered_nums = np.power(num_list, 2)
+        rms = np.sqrt(np.sum(powered_nums) / len(nums))
+        return rms
