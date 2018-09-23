@@ -39,7 +39,6 @@ class SensorMonitor(BaseMonitor):
 
     def busy_loop(self):
         current = self.convert_adcval_to_current(self.adc.read_adc(0, gain=PGA_GAIN))
-        print("[busy_loop] {}".format(current))
         self.sample_list.append(current)
         self.sampling_times += 1
 
@@ -50,8 +49,8 @@ class SensorMonitor(BaseMonitor):
         else:
             self.current_rms = self.rms(self.sample_list)
             self.watt_rms = self.current_rms * VOLTAGE
-            # self.watt_rms = math.sqrt(self.sample / float(self.sampling_times)) * VOLTAGE
-            # self.current_rms = math.sqrt(self.sample / float(self.sampling_times))
+            print("[internal_loop] current : {}".format(self.current_rms))
+            print("[internal_loop]    watt : {}".format(self.watt_rms))
 
 
     def main_loop(self):
@@ -67,7 +66,6 @@ class SensorMonitor(BaseMonitor):
 
 
     def convert_adcval_to_current(self, adcval):
-        print("[convert_adcval_to_current] {}".format(adcval))
         Vmax = 2.048   # 測定可能な最大電圧 (ADS1015のGain2を選択)
         ValMax = 2048  # 引数の最大値
         return ((adcval / ValMax) * Vmax) / CONVERSION_CONSTANT
