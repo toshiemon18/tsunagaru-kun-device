@@ -72,5 +72,5 @@ class SensorMonitor(BaseMonitor):
 
     def rms(self, num_list):
         powered_nums = np.power(num_list, 2)
-        rms = np.sqrt(np.sum(powered_nums) / len(nums))
+        rms = np.sqrt(np.sum(powered_nums) / len(num_list))
         return rms
