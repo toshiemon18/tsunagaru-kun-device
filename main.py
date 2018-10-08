@@ -11,7 +11,8 @@ class Main:
         json_fp = open("./config.json")
         self.config = dict(json.load(json_fp))
         login_data = self.config["login"]
-        self.client = APIClient(**login_data, env="production")
+        login_data["env"] = "production"
+        self.client = APIClient(**login_data)
 
 
     def main(self):
