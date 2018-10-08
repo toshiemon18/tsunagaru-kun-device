@@ -7,14 +7,22 @@ import json
 class APIClient:
     def __init__(self, email, password, env="development"):
         self.url = self._build_baseurl(env)
+        login_times = 0
         while True:
             status, _, headers = self.login(email, password)
+            login_times += 1
             if status == 200:
                 self.authenticate_data = {"token-type": headers["token-type"],
                                           "access-token": headers["access-token"],
                                           "uid": headers["uid"],
                                           "client": headers["client"]}
                 break
+            else:
+                if login_times >= 100:
+                    raise Exception("Cannot find {}".format(self.url))
+                print("Failed sign up to {}".format(self.url))
+                from time import sleep
+                sleep(3)
 
 
     def login(self, email, password):
@@ -100,12 +108,10 @@ class APIClient:
                 return status, body, headers
         except urllib.error.HTTPError as err:
             print("Detected 4xx or 5xx HTTP Status.")
-            print(err.code())
-            print(err.msg)
+            print(err)
         except urllib.error.URLError as err:
             print("Failed HTTP communication.")
-            print(err.code())
-            print(err.msg)
+            print(err)
 
 
     def _post_request(self, endpoint, data, header):
@@ -130,11 +136,10 @@ class APIClient:
                 return status, body, headers
         except urllib.error.HTTPError as err:
             print("Detected 4xx or 5xx HTTP Status.")
-            print(err.code())
-            print(err.msg)
+            print(err)
         except urllib.error.URLError as err:
             print("Failed HTTP communication.")
-            print(err.msg)
+            print(err)
 
 
     def _build_baseurl(self, env):
