@@ -82,6 +82,9 @@ class APIClient:
             - headers: ヘッダー
         """
         headers = self._build_headers(**self.authenticate_data)
+        params = {"electric_current": electric_current,
+                  "watt": watt,
+                  "device_id": device_id}
         s, b, h = self._post_request("/v1/metrics", params, headers)
         return s, b, h
 
