@@ -3,7 +3,7 @@
 import json
 import time
 from tsunagarukun.api_client import APIClient
-# from tsunagarukun.sensor_monitor import SensorMonitor
+from tsunagarukun.sensor_monitor import SensorMonitor
 from tsunagarukun.constants import MEASURE_INTERVAL
 
 class Main:
