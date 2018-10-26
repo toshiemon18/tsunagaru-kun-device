@@ -55,6 +55,7 @@ class SensorMonitor(BaseMonitor):
         self.start = int(time.time())
         prev = self.start
         while True:
+            self.reset_vars()
             while time.time() - prev < self.interval:
                 if len(self.sample_list) <= SAMPLE_TIMES:
                     self.busy_loop()
